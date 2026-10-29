@@ -40,6 +40,7 @@ class DefaultAgent:
         """See the `AgentConfig` class for permitted keyword arguments."""
         self.config = config_class(**kwargs)
         self.messages: list[dict] = []
+        # 教学：注入模型与环境，编排层不绑定具体供应商或命令运行方式。
         self.model = model
         self.env = env
         self.extra_template_vars = {}
@@ -93,6 +94,7 @@ class DefaultAgent:
             self.model.format_message(role="system", content=self._render_template(self.config.system_template)),
             self.model.format_message(role="user", content=self._render_template(self.config.instance_template)),
         )
+        # 教学：循环依靠 exit 消息终止；异常也用于传递提交、超限等控制信号。
         while True:
             try:
                 self.step()
@@ -125,6 +127,7 @@ class DefaultAgent:
 
     def step(self) -> list[dict]:
         """Query the LM, execute actions."""
+        # 教学：先请求模型并保存动作，再执行动作并追加观察；下一轮才能利用反馈。
         return self.execute_actions(self.query())
 
     def query(self) -> dict:
@@ -153,6 +156,7 @@ class DefaultAgent:
 
     def execute_actions(self, message: dict) -> list[dict]:
         """Execute actions in message, add observation messages, return them."""
+        # 教学：extra.actions 是模型适配层整理的内部协议，不等于供应商原始响应。
         outputs = [self.env.execute(action) for action in message.get("extra", {}).get("actions", [])]
         return self.add_messages(*self.model.format_observation_messages(message, outputs, self.get_template_vars()))
 
