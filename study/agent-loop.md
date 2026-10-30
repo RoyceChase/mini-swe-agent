@@ -18,12 +18,12 @@ flowchart TD
     Entry --> Model[LitellmModel]
     Entry --> Env[LocalEnvironment]
     Agent --> Step[step]
-    Step --> Query[query：检查预算并请求模型]
+    Step --> Query[query: 检查预算并请求模型]
     Query --> Model
     Model --> History[保存模型消息]
-    History --> Actions[execute_actions：读取 extra.actions]
+    History --> Actions[execute_actions: 读取 extra.actions]
     Actions --> Execute[env.execute]
-    Execute --> Process[_run：subprocess.Popen]
+    Execute --> Process[_run: subprocess.Popen]
     Process --> Observe[格式化观察并追加历史]
     Observe --> Step
 ```
@@ -38,12 +38,12 @@ flowchart TD
     Step --> Clean[正常完成一步]
     Clean --> Save[finally 保存轨迹]
     Step --> Format[FormatError]
-    Format --> Retry[记录错误；连续错误达阈值则追加 exit]
+    Format --> Retry[记录错误: 连续错误达阈值则追加 exit]
     Retry --> Save
-    Step --> Interrupt[InterruptAgentFlow：提交或超限等]
+    Step --> Interrupt[InterruptAgentFlow: 提交或超限等]
     Interrupt --> Record[追加异常携带的消息]
     Record --> Save
-    Save --> Check{最后消息是 exit？}
+    Save --> Check{最后消息是 exit? }
     Check -->|否| Run
     Check -->|是| Return[返回 exit 的 extra]
 ```
